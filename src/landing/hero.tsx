@@ -180,14 +180,12 @@ export function Hero() {
             />
             <span
               ref={cursorRef}
-              className="absolute top-0 text-blue-600 font-bold"
+              className=" justify-center top-0 text-blue-600 font-bold"
               style={{
                 left: 0,
                 opacity: 1,
               }}
-            >
-              |
-            </span>
+            ></span>
           </div>
         </div>
       </div>

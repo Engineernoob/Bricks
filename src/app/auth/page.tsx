@@ -1,12 +1,12 @@
 import { SignIn, SignUp } from "@clerk/nextjs";
-import { useState } from "react";
+import react from "react";
 import { Layers } from "lucide-react";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function AuthPage() {
-  const [tab, setTab] = useState<"signin" | "signup">("signin");
+  const [tab, setTab] = react.useState<"signin" | "signup">("signin");
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-slate-50 p-4">
