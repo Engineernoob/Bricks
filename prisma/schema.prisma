@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL") // from Neon.tech
+}
+
+model User {
+  id        String    @id @default(cuid())
+  clerkId   String    @unique
+  email     String    @unique
+  projects  Project[]
+  createdAt DateTime  @default(now())
+}
+
+model Project {
+  id          String       @id @default(cuid())
+  name        String
+  slug        String       @unique
+  description String?
+  isPublished Boolean      @default(false)
+  user        User         @relation(fields: [userId], references: [id])
+  userId      String
+  components  Component[]
+  collections Collection[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Component {
+  id         String   @id @default(cuid())
+  type       String
+  props      Json
+  project    Project  @relation(fields: [projectId], references: [id])
+  projectId  String
+  orderIndex Int      @default(0)
+  parentId   String?
+  createdAt  DateTime @default(now())
+}
+
+model Collection {
+  id          String           @id @default(cuid())
+  project     Project          @relation(fields: [projectId], references: [id])
+  projectId   String
+  name        String
+  displayName String
+  fields      Field[]
+  data        CollectionData[]
+  createdAt   DateTime         @default(now())
+}
+
+model Field {
+  id           String     @id @default(cuid())
+  collection   Collection @relation(fields: [collectionId], references: [id])
+  collectionId String
+  name         String
+  displayName  String
+  fieldType    String
+  required     Boolean    @default(false)
+  defaultValue String?
+  orderIndex   Int        @default(0)
+  createdAt    DateTime   @default(now())
+}
+
+model CollectionData {
+  id           String     @id @default(cuid())
+  collection   Collection @relation(fields: [collectionId], references: [id])
+  collectionId String
+  data         Json
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}

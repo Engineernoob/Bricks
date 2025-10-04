@@ -1,0 +1,21 @@
+import { Navbar } from "@/landing/navbar";
+import { Hero } from "@/landing/hero";
+import { Features } from "@/landing/features";
+import { Testimonials } from "@/landing/testimoninals";
+import { CallToAction } from "@/landing/cta";
+import { Footer } from "@/landing/footer";
+import { Pricing } from "@/landing/pricing";
+
+export default function Home() {
+  return (
+    <main>
+      <Navbar />
+      <Hero />
+      <Features />
+      <Testimonials />
+      <Pricing />
+      <CallToAction />
+      <Footer />
+    </main>
+  );
+}
