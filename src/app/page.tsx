@@ -1,3 +1,5 @@
+"use client";
+
 import { Navbar } from "@/landing/navbar";
 import { Hero } from "@/landing/hero";
 import { Features } from "@/landing/features";

@@ -1,3 +1,5 @@
+"use client";
+
 import { SignIn, SignUp } from "@clerk/nextjs";
 import react from "react";
 import { Layers } from "lucide-react";
