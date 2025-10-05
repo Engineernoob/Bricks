@@ -1,6 +1,6 @@
 import { motion } from "motion/react";
 import { FallingBricks } from "@/components/FallingBricks";
-import { MarkdownRenderer } from "./MarkdownRenderer";
+import { MarkdownRenderer } from "../MarkdownRenderer";
 import { BlogPost } from "@/lib/mdx";
 import { formatDate } from "@/lib/mdx";
 
