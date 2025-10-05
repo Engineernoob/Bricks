@@ -1,79 +1,98 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
-import Link from "next/link";
-import { Metadata } from "next";
-
-// 🧭 Page Metadata
-export const metadata: Metadata = {
-  title: "Bricks Blog – Building in Public",
-  description:
-    "Follow the journey of Bricks — from design to launch. Product updates, new features, and lessons learned.",
-};
+import { motion } from "motion/react";
+import { FallingBricks } from "@/components/FallingBricks";
+import { BlogPost } from "./BlogPost";
+import { BlogNavigation } from "@/components/Navigation";
 
 export default function BlogPage() {
   const postsDir = path.join(process.cwd(), "content/blog");
-  const files = fs.readdirSync(postsDir);
+  const files = fs.readdirSync(postsDir).filter((f) => f.endsWith(".mdx"));
 
-  // Parse each MDX file’s frontmatter
-  const posts = files.map((file) => {
-    const filePath = path.join(postsDir, file);
-    const source = fs.readFileSync(filePath, "utf-8");
-    const { data } = matter(source);
-    const slug = file.replace(".mdx", "");
+  const posts = files
+    .map((file) => {
+      const filePath = path.join(postsDir, file);
+      const source = fs.readFileSync(filePath, "utf-8");
+      const { data } = matter(source);
+      const slug = file.replace(/\.mdx$/, "");
 
-    return {
-      slug,
-      title: data.title || slug,
-      date: data.date
-        ? new Date(data.date).toLocaleDateString()
-        : "Coming soon",
-      excerpt: data.excerpt || "Stay tuned for our next update.",
-    };
-  });
+      return {
+        slug,
+        title: data.title || slug.replace(/-/g, " "),
+        excerpt:
+          data.excerpt ||
+          "A quick look behind the scenes at what’s new and what’s next for Bricks.",
+        date: data.date
+          ? new Date(data.date).toLocaleDateString(undefined, {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })
+          : "Coming soon",
+        readTime: data.readTime || "5 min read",
+        author: data.author || "Team Bricks",
+      };
+    })
+    .sort((a, b) => (a.date < b.date ? 1 : -1));
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-50 to-white py-24 px-6">
-      <div className="max-w-4xl mx-auto text-center mb-12">
-        <h1 className="text-5xl font-[Amiri] font-bold text-slate-900 mb-4">
-          Building Bricks in Public
-        </h1>
-        <p className="text-lg text-slate-600 font-[Inter] max-w-2xl mx-auto">
-          Updates, progress, and lessons from building the next generation of
-          no-code tools — one brick at a time.
-        </p>
-      </div>
+    <section className="relative min-h-screen bg-gradient-to-b from-slate-50 to-white py-24">
+      {/* 🧱 Animated falling bricks background */}
+      <FallingBricks />
+      <BlogNavigation />
 
-      {/* Posts grid */}
-      <div className="grid gap-8 md:grid-cols-2">
-        {posts.map((post) => (
-          <Link
-            key={post.slug}
-            href={`/blog/${post.slug}`}
-            className="group block rounded-xl border border-slate-200 bg-white/80 backdrop-blur-sm p-6 hover:shadow-lg transition-all"
+      {/* Content */}
+      <div className="relative z-10 max-w-5xl mx-auto px-6">
+        {/* Header */}
+        <div className="text-center mb-16">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: "easeOut" }}
+            className="space-y-4"
           >
-            <div className="mb-3 text-sm text-slate-500 font-[Inter]">
-              {post.date}
-            </div>
-            <h2 className="text-xl font-semibold text-slate-900 group-hover:text-blue-600 transition-colors font-[Inter]">
-              {post.title}
+            <h2 className="text-5xl font-[Amiri] font-bold text-slate-900">
+              Insights & Ideas
             </h2>
-            <p className="mt-3 text-slate-600 text-sm leading-relaxed font-[Inter]">
-              {post.excerpt}
+            <div className="w-12 h-px bg-slate-900 mx-auto" />
+            <p className="max-w-2xl mx-auto mt-6 text-slate-600 font-[Inter]">
+              Thoughts on no-code development, design, and building the future
+              of software creation — one brick at a time.
             </p>
-            <div className="mt-4 text-blue-600 text-sm font-medium group-hover:underline">
-              Read more →
-            </div>
-          </Link>
-        ))}
-      </div>
-
-      {/* Empty state */}
-      {posts.length === 0 && (
-        <div className="text-center text-slate-500 mt-16 font-[Inter]">
-          No posts yet — new updates coming soon.
+          </motion.div>
         </div>
-      )}
-    </main>
+
+        {/* Blog posts grid */}
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-2">
+          {posts.map((post, index) => (
+            <BlogPost
+              key={post.slug}
+              title={post.title}
+              excerpt={post.excerpt}
+              date={post.date}
+              readTime={post.readTime}
+              author={post.author}
+              index={index}
+              onClick={() => (window.location.href = `/blog/${post.slug}`)}
+            />
+          ))}
+        </div>
+
+        {/* Load More button */}
+        {posts.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
+            className="text-center mt-16"
+          >
+            <button className="px-6 py-3 text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-300 rounded-lg transition-colors duration-200">
+              Load More Articles
+            </button>
+          </motion.div>
+        )}
+      </div>
+    </section>
   );
 }

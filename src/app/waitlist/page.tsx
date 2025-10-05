@@ -1,19 +1,22 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { gsap } from "gsap";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, Loader2 } from "lucide-react";
+import { CheckCircle2, Loader2, ArrowLeft } from "lucide-react";
 
 export default function WaitlistPage() {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const backRef = useRef<HTMLButtonElement>(null);
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<
     "idle" | "loading" | "success" | "error"
   >("idle");
+  const router = useRouter();
 
   // ✨ Fade-up reveal
   useEffect(() => {
@@ -52,12 +55,29 @@ export default function WaitlistPage() {
       ref={sectionRef}
       className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-slate-50 via-white to-blue-50 px-6 relative overflow-hidden"
     >
+      {/* 🡐 Back Button */}
+      <button
+        ref={backRef}
+        onClick={() => {
+          if (window.history.length > 1) {
+            router.back();
+          } else {
+            router.push("/");
+          }
+        }}
+        className="absolute left-6 top-6 flex items-center gap-1 text-slate-500 hover:text-slate-900 transition-all hover:-translate-x-1"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        <span className="text-sm font-medium">Back</span>
+      </button>
+
       {/* Subtle glow */}
       <div
         aria-hidden="true"
         className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(99,102,241,0.08)_0%,transparent_70%)]"
       />
 
+      {/* Content */}
       <div className="relative z-10 max-w-md w-full text-center">
         <div className="inline-block mb-5 px-4 py-1.5 rounded-full text-sm font-medium text-blue-700 bg-blue-100 border border-blue-200 shadow-sm fade-up">
           🚀 Early Access
@@ -127,6 +147,7 @@ export default function WaitlistPage() {
         </p>
       </div>
 
+      {/* Bottom Gradient Fade */}
       <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-blue-50 to-transparent pointer-events-none" />
     </main>
   );

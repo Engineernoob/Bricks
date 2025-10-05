@@ -69,6 +69,9 @@ export function Footer() {
             <Link href="/contact" className="hover:text-slate-900 transition">
               Contact
             </Link>
+            <Link href="/blog" className="hover:text-slate-800 transition">
+              Blog
+            </Link>
           </nav>
         </div>
 

@@ -94,6 +94,7 @@ export function Hero() {
       typed.destroy();
       observer.disconnect();
       gsap.killTweensOf(cursor);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       if (typedRef.current) typedRef.current.innerHTML = "";
     };
   }, []);
