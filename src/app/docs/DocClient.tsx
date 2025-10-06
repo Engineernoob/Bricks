@@ -14,12 +14,15 @@ interface DocPage {
 
 export function DocsClient({ parsedDocs }: { parsedDocs: DocPage[] }) {
   // Group docs by category
-  const groupedDocs = parsedDocs.reduce((groups, doc) => {
-    const category = doc.category || "General";
-    if (!groups[category]) groups[category] = [];
-    groups[category].push(doc);
-    return groups;
-  }, {} as Record<string, DocPage[]>);
+  const groupedDocs = parsedDocs.reduce(
+    (groups, doc) => {
+      const category = doc.category || "General";
+      if (!groups[category]) groups[category] = [];
+      groups[category].push(doc);
+      return groups;
+    },
+    {} as Record<string, DocPage[]>,
+  );
 
   return (
     <section className="relative min-h-screen bg-gradient-to-b from-slate-50 to-white py-24">
@@ -127,4 +130,3 @@ export function DocsClient({ parsedDocs }: { parsedDocs: DocPage[] }) {
     </section>
   );
 }
-

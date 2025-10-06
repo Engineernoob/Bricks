@@ -1,25 +1,29 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
-import { DocClient } from "../DocClient";
+import { DocContentClient } from "../DocsContentClient"; // ✅ use correct component
 
 export default async function DocPage({
   params,
 }: {
   params: { slug: string };
 }) {
-  const slug = params.slug;
+  const { slug } = params;
 
-  // Read MDX file from the content directory
+  // ✅ Read MDX file from /content/docs/
   const filePath = path.join(process.cwd(), "content/docs", `${slug}.mdx`);
-  const fileContents = fs.readFileSync(filePath, "utf-8");
+  if (!fs.existsSync(filePath)) {
+    return (
+      <div className="text-center mt-20 text-slate-500">Doc not found.</div>
+    );
+  }
 
-  // Parse frontmatter and content
+  const fileContents = fs.readFileSync(filePath, "utf-8");
   const { content, data } = matter(fileContents);
 
-  // Pass content to the client component
+  // ✅ Pass structured props to client component
   return (
-    <DocClient
+    <DocContentClient
       title={data.title || slug}
       content={content}
       description={data.description || ""}
