@@ -125,7 +125,7 @@ export function Hero() {
           <br /> brick by brick.
         </h1>
 
-        <p className="hero-sub mt-6 text-base sm:text-lg text-slate-600 font-[Inter] leading-relaxed max-w-2xl mx-auto">
+        <p className="hero-sub mt-6 text-base sm:text-lg text-slate-900 font-[Mono] leading-relaxed max-w-2xl mx-auto">
           Bricks is a no-code full-stack builder. Design, connect, and deploy —
           no code required.
         </p>
@@ -142,7 +142,7 @@ export function Hero() {
           <Link href="#features">
             <Button
               variant="ghost"
-              className="px-8 py-3 text-slate-700 hover:text-slate-900 hover:bg-slate-100 font-medium transition-all"
+              className="px-8 py-3 text-slate-900 hover:text-slate-900 hover:bg-slate-100 font-medium transition-all"
             >
               Learn More
             </Button>

@@ -79,7 +79,7 @@ export function Testimonials() {
               Loved by Builders Everywhere
             </h2>
             <div className="w-12 h-px bg-slate-900 mx-auto" />
-            <p className="max-w-2xl mx-auto mt-6 text-slate-600 font-[Inter]">
+            <p className="max-w-2xl mx-auto mt-6 text-slate-900 font-[Inter]">
               See what teams around the world are saying about building with
               Bricks.
             </p>
@@ -97,7 +97,7 @@ export function Testimonials() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
               {stats.map((s, i) => (
                 <div key={i} className="text-center">
-                  <div className="text-2xl font-light text-slate-900 mb-1">
+                  <div className="text-2xl font-semibold text-slate-900 mb-1">
                     {s.number}
                   </div>
                   <div className="text-sm text-slate-600">{s.label}</div>
@@ -122,12 +122,12 @@ export function Testimonials() {
             >
               <div className="bg-white/90 backdrop-blur-sm rounded-lg p-8 border border-slate-100 hover:bg-white transition duration-300 h-full">
                 <div className="space-y-6">
-                  <p className="leading-relaxed italic text-slate-700">
+                  <p className="leading-relaxed italic text-slate-900">
                     “{t.content}”
                   </p>
                   <div className="flex items-center space-x-4 pt-4 border-t border-slate-100">
                     <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center">
-                      <span className="text-sm font-medium text-slate-700">
+                      <span className="text-sm font-medium text-slate-900">
                         {t.avatar}
                       </span>
                     </div>
@@ -135,7 +135,7 @@ export function Testimonials() {
                       <div className="font-medium text-slate-900">
                         {t.author}
                       </div>
-                      <div className="text-sm text-slate-600">
+                      <div className="text-sm text-slate-900">
                         {t.role} at {t.company}
                       </div>
                     </div>
@@ -154,18 +154,18 @@ export function Testimonials() {
           className="mb-16"
         >
           <div className="bg-white/90 backdrop-blur-sm rounded-lg p-12 border border-slate-100 text-center">
-            <blockquote className="max-w-3xl mx-auto text-xl italic text-slate-700 leading-relaxed">
+            <blockquote className="max-w-3xl mx-auto text-xl italic text-slate-900 leading-relaxed">
               “Bricks didn’t just change how we build—it transformed our entire
               approach to product development. We’re shipping faster, iterating
               more efficiently, and our team is happier than ever.”
             </blockquote>
             <div className="mt-8 flex items-center justify-center gap-4">
               <div className="w-14 h-14 bg-slate-100 rounded-full flex items-center justify-center">
-                <span className="text-lg font-medium text-slate-700">JW</span>
+                <span className="text-lg font-medium text-slate-900">JW</span>
               </div>
               <div className="text-left">
                 <div className="font-medium text-slate-900">Jamie Wilson</div>
-                <div className="text-slate-600 text-sm">
+                <div className="text-slate-900 text-sm">
                   VP of Engineering · TechCorp
                 </div>
               </div>
@@ -185,7 +185,7 @@ export function Testimonials() {
               <h3 className="text-slate-900 font-[Amiri] text-2xl">
                 Join the Community
               </h3>
-              <p className="text-slate-600 font-[Inter] leading-relaxed">
+              <p className="text-slate-900 font-[Amiri] leading-relaxed">
                 Become part of a growing community of builders shaping the
                 future of application development.
               </p>
@@ -193,7 +193,7 @@ export function Testimonials() {
                 <button className="px-8 py-3 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors duration-200">
                   Start Building Today
                 </button>
-                <button className="px-8 py-3 text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-300 rounded-lg transition-colors duration-200">
+                <button className="px-8 py-3 text-slate-900 hover:text-slate-900 border border-slate-200 hover:border-slate-300 rounded-lg transition-colors duration-200">
                   Read Case Studies
                 </button>
               </div>

@@ -11,8 +11,6 @@ import { FallingBricks } from "@/components/FallingBricks";
 export function Pricing() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [isYearly, setIsYearly] = useState(false);
-  const [discountActive, setDiscountActive] = useState(true);
-  const [countdown, setCountdown] = useState("48:00:00");
 
   useEffect(() => {
     if (!sectionRef.current) return;
@@ -35,33 +33,11 @@ export function Pricing() {
     );
   }, []);
 
-  // 🕒 Launch discount countdown (48h)
-  useEffect(() => {
-    const end = Date.now() + 48 * 60 * 60 * 1000;
-    const timer = setInterval(() => {
-      const remaining = end - Date.now();
-      if (remaining <= 0) {
-        setDiscountActive(false);
-        clearInterval(timer);
-        return;
-      }
-      const hours = Math.floor(remaining / (1000 * 60 * 60));
-      const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
-      setCountdown(
-        `${hours.toString().padStart(2, "0")}:${minutes
-          .toString()
-          .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`,
-      );
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
-
   const tiers = [
     {
       name: "Starter",
       priceMonthly: "Free",
-      priceYearly: "$15",
+      priceYearly: "coming soon",
       description:
         "Perfect for exploring Bricks and building your first project.",
       features: [
@@ -76,8 +52,8 @@ export function Pricing() {
     },
     {
       name: "Pro",
-      priceMonthly: "$29",
-      priceYearly: "$290",
+      priceMonthly: "TBA",
+      priceYearly: "TBA",
       description:
         "For indie hackers and solo founders ready to launch production apps.",
       features: [
@@ -89,7 +65,7 @@ export function Pricing() {
       ],
       highlight: true,
       cta: "Join Waitlist",
-      discount: 50,
+      discount: null,
     },
     {
       name: "Team",
@@ -105,7 +81,7 @@ export function Pricing() {
         "Enterprise integrations",
       ],
       highlight: false,
-      cta: "Contact Sales",
+      cta: "Join Waitlist",
       discount: null,
     },
   ];
@@ -134,7 +110,7 @@ export function Pricing() {
               Simple, Transparent Pricing
             </h2>
             <div className="w-12 h-px bg-slate-900 mx-auto mt-4" />
-            <p className="mt-6 text-lg text-slate-600 font-[Amiri]">
+            <p className="mt-6 text-lg text-slate-900 font-[Amiri]">
               Start free, scale as you grow. No hidden fees, no surprises.
             </p>
 
@@ -159,27 +135,12 @@ export function Pricing() {
                 Yearly <span className="text-indigo-600">–20%</span>
               </span>
             </div>
-
-            {/* Countdown badge */}
-            {discountActive && (
-              <div className="mt-6 inline-block px-4 py-2 rounded-full text-sm font-medium text-white bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 shadow-sm animate-pulse">
-                🚀 Launch Day: 50% OFF • Ends in {countdown}
-              </div>
-            )}
           </motion.div>
         </div>
 
         {/* Cards */}
         <div className="grid gap-10 lg:grid-cols-3 mb-20">
           {tiers.map((tier, index) => {
-            const showDiscount =
-              discountActive && tier.discount && tier.priceMonthly !== "Free";
-
-            const numericPrice = Number(
-              tier.priceMonthly.replace("$", "").replace(",", ""),
-            );
-            const discounted = `$${(numericPrice * 0.5).toFixed(0)}`;
-
             return (
               <motion.div
                 key={tier.name}
@@ -214,27 +175,13 @@ export function Pricing() {
                       {tier.name}
                     </h3>
 
-                    {/* Pricing with discount */}
+                    {/* Pricing */}
                     <div className="mt-4 text-3xl font-[Amiri] text-slate-900">
-                      {showDiscount ? (
-                        <>
-                          <span className="line-through text-slate-400 mr-2">
-                            {tier.priceMonthly}
-                          </span>
-                          <span>{discounted}</span>
-                          <span className="text-sm text-slate-600 ml-1">
-                            /month
-                          </span>
-                        </>
-                      ) : (
-                        <>
-                          {tier.priceMonthly}
-                          {tier.priceMonthly !== "Free" && (
-                            <span className="text-sm text-slate-600 ml-1">
-                              /month
-                            </span>
-                          )}
-                        </>
+                      {tier.priceMonthly}
+                      {tier.priceMonthly !== "Free" && (
+                        <span className="text-sm text-slate-600 ml-1">
+                          /month
+                        </span>
                       )}
                     </div>
 

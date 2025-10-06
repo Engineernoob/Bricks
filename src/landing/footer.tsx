@@ -36,7 +36,7 @@ const footerLinks = {
 const socialLinks = [
   {
     name: "Twitter",
-    href: "https://twitter.com/bricks",
+    href: "https://twitter.com/shebuildsfire",
     icon: "ri-twitter-x-line",
   },
   { name: "GitHub", href: "https://github.com/bricks", icon: "ri-github-line" },
@@ -103,7 +103,7 @@ export function Footer() {
                   Bricks
                 </span>
               </div>
-              <p className="text-slate-600 max-w-sm leading-relaxed font-[Inter]">
+              <p className="text-slate-900 max-w-sm leading-relaxed font-[Inter]">
                 The visual development platform that empowers anyone to build
                 powerful applications without code.
               </p>
@@ -122,7 +122,7 @@ export function Footer() {
                       duration: 0.5,
                       delay: 0.2 + index * 0.05,
                     }}
-                    className="text-slate-400 hover:text-slate-700 transition-colors duration-200"
+                    className="text-slate-800 hover:text-slate-700 transition-colors duration-200"
                     aria-label={social.name}
                   >
                     <i className={`${social.icon} text-lg`} />
@@ -159,7 +159,7 @@ export function Footer() {
                     >
                       <Link
                         href={link.href}
-                        className="text-slate-600 hover:text-slate-900 transition-colors duration-200 text-sm"
+                        className="text-slate-900 hover:text-slate-900 transition-colors duration-200 text-sm"
                       >
                         {link.name}
                       </Link>
@@ -184,7 +184,7 @@ export function Footer() {
           >
             <div className="space-y-1 text-center md:text-left">
               <h4 className="text-slate-900 font-medium">Stay updated</h4>
-              <p className="text-sm text-slate-600">
+              <p className="text-sm text-slate-800">
                 Get the latest news and updates from Bricks.
               </p>
             </div>
