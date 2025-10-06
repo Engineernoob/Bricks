@@ -1,11 +1,21 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from "react";
 import { v4 as uuid } from "uuid";
 
 // ───────────────────────────────
 // Types
 // ───────────────────────────────
+export interface BlockProps {
+  [key: string]: string | string[] | number | boolean;
+}
+
 export type BlockType = "text" | "input" | "table";
 
 export interface Block {
@@ -35,6 +45,10 @@ export interface Project {
 
 export interface ProjectContextValue {
   project: Project | null;
+  projectsList: Project[];
+  selectedBlockId: string | null;
+  selectedBlock: Block | null;
+
   createProject: (name: string) => Project;
   loadProject: (id: string) => void;
   saveProject: () => void;
@@ -42,27 +56,30 @@ export interface ProjectContextValue {
   moveBlocks: (newOrder: Block[]) => void;
   updateBlock: (id: string, patch: Partial<Block["props"]>) => void;
   removeBlock: (id: string) => void;
+  selectBlock: (id: string | null) => void;
   createCollection: (name: string) => void;
   addFieldToCollection: (collectionId: string, field: SchemaField) => void;
-  projectsList: Project[];
 }
 
 // ───────────────────────────────
-// Context setup
+// Context Setup
 // ───────────────────────────────
 const ProjectContext = createContext<ProjectContextValue | undefined>(
   undefined,
 );
 
+// LocalStorage keys
 const STORAGE_KEY = "bricks_projects_v1";
 const LAST_OPEN_KEY = "bricks_last_project";
 
+// ───────────────────────────────
+// Helpers
+// ───────────────────────────────
 function loadAll(): Project[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
-    const parsed: Project[] = JSON.parse(raw);
-    return parsed;
+    return JSON.parse(raw) as Project[];
   } catch {
     return [];
   }
@@ -73,28 +90,33 @@ function persistAll(list: Project[]): void {
 }
 
 // ───────────────────────────────
-// Provider
+// Provider Component
 // ───────────────────────────────
-export function ProjectProvider({ children }: { children: React.ReactNode }) {
+export function ProjectProvider({ children }: { children: ReactNode }) {
   const [project, setProject] = useState<Project | null>(null);
   const [projectsList, setProjectsList] = useState<Project[]>([]);
+  const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
 
-  // Load projects from localStorage
+  // Load all projects on mount
   useEffect(() => {
     const list = loadAll();
     setProjectsList(list);
+
     const last = localStorage.getItem(LAST_OPEN_KEY);
     if (last) {
-      const p = list.find((x) => x.id === last);
-      if (p) setProject(p);
+      const found = list.find((p) => p.id === last);
+      if (found) setProject(found);
     }
   }, []);
 
-  // Persist last opened project id
+  // Persist last opened project
   useEffect(() => {
     if (project) localStorage.setItem(LAST_OPEN_KEY, project.id);
   }, [project]);
 
+  // ───────────────────────────────
+  // Core Actions
+  // ───────────────────────────────
   function createProject(name: string): Project {
     const newProj: Project = {
       id: uuid(),
@@ -103,9 +125,9 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
       schema: [],
       createdAt: new Date().toISOString(),
     };
-    const list = [newProj, ...projectsList];
-    persistAll(list);
-    setProjectsList(list);
+    const updated = [newProj, ...projectsList];
+    persistAll(updated);
+    setProjectsList(updated);
     setProject(newProj);
     return newProj;
   }
@@ -129,27 +151,26 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
 
   function addBlock(type: BlockType): Block {
     if (!project) throw new Error("No project loaded");
-    const defaultProps: Record<BlockType, Record<string, unknown>> = {
+
+    const defaults: Record<BlockType, Record<string, unknown>> = {
       text: { text: "Heading", tag: "h2" },
-      input: { label: "Name", placeholder: "Enter value", name: "field" },
+      input: { label: "Name", placeholder: "Enter text" },
       table: { columns: ["Column 1", "Column 2"], rows: [["", ""]] },
     };
-    const newBlock: Block = {
-      id: uuid(),
-      type,
-      props: defaultProps[type],
-    };
-    const updated: Project = {
-      ...project,
-      blocks: [...project.blocks, newBlock],
-    };
+
+    const newBlock: Block = { id: uuid(), type, props: defaults[type] };
+    const updated = { ...project, blocks: [...project.blocks, newBlock] };
+
     setProject(updated);
+    persistAll([updated, ...projectsList.filter((p) => p.id !== project.id)]);
     return newBlock;
   }
 
   function moveBlocks(newOrder: Block[]): void {
     if (!project) return;
-    setProject({ ...project, blocks: newOrder });
+    const updated = { ...project, blocks: newOrder };
+    setProject(updated);
+    saveProject();
   }
 
   function updateBlock(id: string, patch: Partial<Block["props"]>): void {
@@ -157,21 +178,30 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
     const blocks = project.blocks.map((b) =>
       b.id === id ? { ...b, props: { ...b.props, ...patch } } : b,
     );
-    setProject({ ...project, blocks });
+    const updated = { ...project, blocks };
+    setProject(updated);
+    saveProject();
   }
 
   function removeBlock(id: string): void {
     if (!project) return;
-    setProject({
+    const updated = {
       ...project,
       blocks: project.blocks.filter((b) => b.id !== id),
-    });
+    };
+    setProject(updated);
+    saveProject();
   }
 
+  // ───────────────────────────────
+  // Schema Actions
+  // ───────────────────────────────
   function createCollection(name: string): void {
     if (!project) return;
-    const col: SchemaCollection = { id: uuid(), name, fields: [] };
-    setProject({ ...project, schema: [...project.schema, col] });
+    const newCol: SchemaCollection = { id: uuid(), name, fields: [] };
+    const updated = { ...project, schema: [...project.schema, newCol] };
+    setProject(updated);
+    saveProject();
   }
 
   function addFieldToCollection(
@@ -184,11 +214,29 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
         ? { ...col, fields: [...col.fields, field] }
         : col,
     );
-    setProject({ ...project, schema });
+    const updated = { ...project, schema };
+    setProject(updated);
+    saveProject();
   }
 
+  // ───────────────────────────────
+  // Block Selection
+  // ───────────────────────────────
+  function selectBlock(id: string | null): void {
+    setSelectedBlockId(id);
+  }
+
+  const selectedBlock =
+    project?.blocks.find((b) => b.id === selectedBlockId) || null;
+
+  // ───────────────────────────────
+  // Context Value
+  // ───────────────────────────────
   const value: ProjectContextValue = {
     project,
+    projectsList,
+    selectedBlockId,
+    selectedBlock,
     createProject,
     loadProject,
     saveProject,
@@ -196,9 +244,9 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
     moveBlocks,
     updateBlock,
     removeBlock,
+    selectBlock,
     createCollection,
     addFieldToCollection,
-    projectsList,
   };
 
   return (
@@ -206,8 +254,11 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
+// ───────────────────────────────
+// Hook
+// ───────────────────────────────
 export function useProject(): ProjectContextValue {
   const ctx = useContext(ProjectContext);
-  if (!ctx) throw new Error("useProject must be used inside ProjectProvider");
+  if (!ctx) throw new Error("useProject must be used within ProjectProvider");
   return ctx;
 }
