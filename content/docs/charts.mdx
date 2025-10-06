@@ -1,0 +1,97 @@
+---
+### 📊 `/content/docs/charts.mdx`
+---
+
+title: "Visualizing Data with Bricks Charts"
+description: "Turn your app’s data into interactive, responsive visualizations in seconds."
+category: "Data Visualization"
+date: "2025-10-05"
+
+---
+
+Data tells a story — and with **Bricks Charts**, you can make that story interactive, beautiful, and effortless to build.
+
+Charts in Bricks are powered by a lightweight visual interface that connects directly to your data sources.
+
+---
+
+## 📈 Supported Chart Types
+
+| Type                  | Use Case                        |
+| --------------------- | ------------------------------- |
+| **Line Chart**        | Time-series trends and metrics  |
+| **Bar Chart**         | Category comparisons            |
+| **Pie / Donut Chart** | Distribution breakdowns         |
+| **Area Chart**        | Cumulative growth visualization |
+| **Scatter Plot**      | Correlation analysis            |
+
+> 💡 All charts are responsive by default and support dark mode.
+
+---
+
+## 🧩 Adding a Chart
+
+1. Open your app in the builder.
+2. Click **Add → Chart Component**.
+3. Connect a **data source** (database, API, or custom JSON).
+4. Choose a chart type and style options.
+
+Example:
+
+```json
+{
+  "type": "bar",
+  "data": {
+    "labels": ["Q1", "Q2", "Q3", "Q4"],
+    "values": [1200, 1800, 950, 2100]
+  },
+  "style": { "color": "#4f46e5", "rounded": true }
+}
+
+🎨 Customizing Charts
+
+Bricks gives full control over design:
+
+Adjust colors, borders, and axis styles
+
+Add interactive hover states
+
+Display legends, tooltips, and data labels
+
+Sync charts with user input for live updates
+
+🔗 Real-Time Data
+
+Charts stay up to date automatically:
+
+Connect to live databases
+
+Subscribe to WebSocket or API streams
+
+Enable auto-refresh intervals
+
+// Example: Live-updating metric
+useEffect(() => {
+  const socket = new WebSocket("wss://data.bricks.run");
+  socket.onmessage = (e) => updateChart(JSON.parse(e.data));
+}, []);
+
+📊 Best Practices
+
+✅ Keep visuals minimal — highlight what matters.
+✅ Limit color variety for clarity.
+✅ Label everything (units, axes, and time ranges).
+✅ Provide contextual summaries below charts.
+
+🚀 Beyond Charts
+
+Pair Bricks Charts with:
+
+Automations to trigger alerts from metrics
+
+AI Insights to generate summaries
+
+Dashboards for investors or teams
+
+“Numbers are the language of truth. Bricks gives them a voice.”
+```

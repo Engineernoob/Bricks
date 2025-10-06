@@ -1,0 +1,78 @@
+---
+title: "Building Automations in Bricks"
+description: "Connect triggers, actions, and data to create powerful automations without code."
+category: "Workflows"
+date: "2025-10-05"
+---
+
+Bricks lets you **automate workflows visually** — connecting triggers and actions between your app, users, and external APIs.
+
+Automations are the glue that turn static apps into living systems. Whether you're sending an email, updating a record, or calling an API — you can build it all in the visual editor.
+
+---
+
+## ⚙️ Understanding the Automation Flow
+
+Each automation follows a **Trigger → Action** pattern.
+
+| Element       | Description                                                    |
+| ------------- | -------------------------------------------------------------- |
+| **Trigger**   | The event that starts the workflow (e.g., “Form submitted”)    |
+| **Condition** | Optional filters to check before continuing                    |
+| **Action**    | The task Bricks executes (e.g., “Send email”, “Update record”) |
+
+---
+
+## 🧩 Creating a New Automation
+
+1. Go to **Automations → New Flow**.
+2. Select a **Trigger** (like “New User Signup”).
+3. Add one or more **Actions** — e.g., send a welcome email or add to a CRM.
+4. Test and enable the automation.
+
+```json
+{
+  "trigger": "user.signup",
+  "actions": [
+    { "type": "email.send", "template": "welcome" },
+    { "type": "db.insert", "table": "users" }
+  ]
+}
+```
+
+💡 Tip: Each action supports variables and expressions so you can personalize automations dynamically.
+
+🧠 Advanced Logic
+
+Use conditional branches to control flow dynamically:
+
+IF (user.role == "admin") → send admin email
+ELSE → send general email
+
+You can also chain automations across projects — Bricks will handle dependencies automatically.
+
+🔌 Integrations
+
+Automations integrate seamlessly with:
+
+Email providers (Resend, Postmark)
+
+Databases (Neon, Supabase)
+
+External APIs (Webhook, REST, GraphQL)
+
+AI agents (OpenAI, Anthropic, Ollama)
+
+⚡ Testing & Monitoring
+
+Bricks includes built-in logs and replay tools.
+You can view automation runs, inspect payloads, and retry failed tasks — all from the dashboard.
+
+🚀 Pro Tip: You can use the Live Mode to debug flows in real time as users interact with your app.
+
+✅ Summary
+
+Automations are your secret weapon.
+They keep your app smart, reactive, and alive — so you can focus on ideas, not wiring.
+
+“Automation is the bridge between creativity and scale.” — Team Bricks

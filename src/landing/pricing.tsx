@@ -1,13 +1,18 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
-import { Check, Clock } from "lucide-react";
+import { Check } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { motion } from "motion/react";
+import { FallingBricks } from "@/components/FallingBricks";
 
 export function Pricing() {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const [isYearly, setIsYearly] = useState(false);
+  const [discountActive, setDiscountActive] = useState(true);
+  const [countdown, setCountdown] = useState("48:00:00");
 
   useEffect(() => {
     if (!sectionRef.current) return;
@@ -30,41 +35,78 @@ export function Pricing() {
     );
   }, []);
 
+  // 🕒 Launch discount countdown (48h)
+  useEffect(() => {
+    const end = Date.now() + 48 * 60 * 60 * 1000;
+    const timer = setInterval(() => {
+      const remaining = end - Date.now();
+      if (remaining <= 0) {
+        setDiscountActive(false);
+        clearInterval(timer);
+        return;
+      }
+      const hours = Math.floor(remaining / (1000 * 60 * 60));
+      const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+      setCountdown(
+        `${hours.toString().padStart(2, "0")}:${minutes
+          .toString()
+          .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`,
+      );
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
   const tiers = [
     {
       name: "Starter",
-      description: "Perfect for exploring Bricks and building your first app.",
+      priceMonthly: "Free",
+      priceYearly: "$15",
+      description:
+        "Perfect for exploring Bricks and building your first project.",
       features: [
+        "5 active projects",
         "Visual builder access",
-        "1 active project",
         "Community support",
         "Starter integrations",
       ],
       highlight: false,
+      cta: "Join Waitlist",
+      discount: null,
     },
     {
       name: "Pro",
+      priceMonthly: "$29",
+      priceYearly: "$290",
       description:
-        "Ideal for solo founders and indie hackers ready to scale their ideas.",
+        "For indie hackers and solo founders ready to launch production apps.",
       features: [
         "Unlimited projects",
         "Custom domains",
         "Priority support",
-        "API + automation access",
+        "API & automation access",
+        "Advanced components",
       ],
       highlight: true,
+      cta: "Join Waitlist",
+      discount: 50,
     },
     {
       name: "Team",
+      priceMonthly: "Custom",
+      priceYearly: "Custom",
       description:
-        "Built for teams that need collaboration, analytics, and advanced workflows.",
+        "For teams needing collaboration, permissions, and advanced analytics.",
       features: [
         "Team workspaces",
         "Role-based permissions",
         "Project analytics",
         "Dedicated support",
+        "Enterprise integrations",
       ],
       highlight: false,
+      cta: "Contact Sales",
+      discount: null,
     },
   ];
 
@@ -72,100 +114,166 @@ export function Pricing() {
     <section
       id="pricing"
       ref={sectionRef}
-      className="relative bg-white py-24 sm:py-32 overflow-hidden"
+      className="relative bg-white py-28 overflow-hidden"
     >
-      {/* Soft background glow */}
+      <FallingBricks />
       <div
         aria-hidden="true"
-        className="absolute -top-40 left-1/2 -z-10 h-[30rem] w-[80rem] -translate-x-1/2 rounded-full bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 blur-3xl opacity-10"
+        className="absolute -top-40 left-1/2 -z-10 h-[36rem] w-[90rem] -translate-x-1/2 rounded-full bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 blur-3xl opacity-20"
       />
 
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         {/* Header */}
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl sm:text-4xl font-[Amiri] font-bold tracking-tight text-slate-900">
-            Plans built for every stage
-          </h2>
-          <p className="mt-4 text-lg leading-8 text-slate-600 font-[Inter]">
-            Whether you’re just getting started or scaling your next big idea,
-            Bricks grows with you.
-          </p>
-          <div className="mt-4 inline-flex items-center gap-2 text-sm text-slate-500">
-            <Clock className="h-4 w-4" />
-            <span>
-              Pricing coming soon — join the waitlist to get early access.
-            </span>
-          </div>
-        </div>
+        <div className="mx-auto max-w-2xl text-center mb-16">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, ease: "easeOut" }}
+          >
+            <h2 className="text-4xl sm:text-5xl font-[Amiri] font-bold text-slate-900">
+              Simple, Transparent Pricing
+            </h2>
+            <div className="w-12 h-px bg-slate-900 mx-auto mt-4" />
+            <p className="mt-6 text-lg text-slate-600 font-[Amiri]">
+              Start free, scale as you grow. No hidden fees, no surprises.
+            </p>
 
-        {/* Pricing cards */}
-        <div className="mx-auto mt-20 grid max-w-lg grid-cols-1 gap-8 lg:max-w-none lg:grid-cols-3">
-          {tiers.map((tier) => (
-            <div
-              key={tier.name}
-              className={`pricing-card flex flex-col justify-between rounded-2xl border ${
-                tier.highlight
-                  ? "border-transparent bg-gradient-to-r shadow-xl hover:shadow-2xl transition-all from-blue-600 via-indigo-500 to-purple-600"
-                  : "border-slate-200 bg-white/70 backdrop-blur-sm shadow-sm hover:shadow-md transition-all"
-              } p-[2px]`}
-            >
-              <div
-                className={`flex flex-col h-full rounded-2xl p-8 ${
-                  tier.highlight
-                    ? "bg-white/90 backdrop-blur-md"
-                    : "bg-white/90 backdrop-blur-md"
+            {/* Toggle */}
+            <div className="mt-8 flex items-center justify-center gap-3">
+              <span className="text-sm font-medium text-slate-900">
+                Monthly
+              </span>
+              <button
+                onClick={() => setIsYearly(!isYearly)}
+                className={`relative w-14 h-7 rounded-full transition-all duration-300 ${
+                  isYearly ? "bg-indigo-600" : "bg-slate-300"
                 }`}
               >
-                <div className="text-center">
-                  <h3
-                    className={`text-xl font-semibold ${
-                      tier.highlight
-                        ? "bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 bg-clip-text text-transparent"
-                        : "text-slate-900"
-                    }`}
-                  >
-                    {tier.name}
-                  </h3>
-                  <p className="mt-4 text-slate-600 font-[Inter] text-s">
-                    {tier.description}
-                  </p>
+                <div
+                  className={`absolute top-0.5 left-0.5 h-6 w-6 rounded-full bg-white shadow-md transition-all duration-300 ${
+                    isYearly ? "translate-x-7" : ""
+                  }`}
+                />
+              </button>
+              <span className="text-sm font-medium text-slate-900">
+                Yearly <span className="text-indigo-600">–20%</span>
+              </span>
+            </div>
 
-                  <div className="mt-6 flex items-center justify-center text-shadow-slate-200 text-s italic">
-                    Coming soon
+            {/* Countdown badge */}
+            {discountActive && (
+              <div className="mt-6 inline-block px-4 py-2 rounded-full text-sm font-medium text-white bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 shadow-sm animate-pulse">
+                🚀 Launch Day: 50% OFF • Ends in {countdown}
+              </div>
+            )}
+          </motion.div>
+        </div>
+
+        {/* Cards */}
+        <div className="grid gap-10 lg:grid-cols-3 mb-20">
+          {tiers.map((tier, index) => {
+            const showDiscount =
+              discountActive && tier.discount && tier.priceMonthly !== "Free";
+
+            const numericPrice = Number(
+              tier.priceMonthly.replace("$", "").replace(",", ""),
+            );
+            const discounted = `$${(numericPrice * 0.5).toFixed(0)}`;
+
+            return (
+              <motion.div
+                key={tier.name}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.8,
+                  delay: 0.3 + index * 0.1,
+                  ease: "easeOut",
+                }}
+                className={`pricing-card relative rounded-2xl border ${
+                  tier.highlight
+                    ? "border-slate-300 bg-white/90 shadow-lg hover:shadow-xl"
+                    : "border-slate-100 bg-white/70 shadow-sm hover:shadow-md"
+                } transition-all duration-300`}
+              >
+                {tier.highlight && (
+                  <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 text-white px-4 py-1 rounded-full text-sm font-medium shadow-md">
+                    Most Popular
                   </div>
-                </div>
+                )}
 
-                {/* Features */}
-                <ul className="mt-8 space-y-3 text-sm leading-6 text-slate-700 font-[Inter]">
-                  {tier.features.map((feature) => (
-                    <li key={feature} className="flex items-center gap-x-2">
-                      <Check
-                        className={`h-4 w-4 ${
-                          tier.highlight ? "text-indigo-500" : "text-blue-600"
-                        }`}
-                      />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-
-                {/* CTA */}
-                <div className="mt-10">
-                  <Link href="/waitlist">
-                    <Button
-                      className={`w-full rounded-lg px-5 py-3 font-medium transition-all ${
+                <div className="p-8 flex flex-col h-full">
+                  <div className="text-center mb-6">
+                    <h3
+                      className={`text-xl font-semibold ${
                         tier.highlight
-                          ? "bg-gradient-to-r from-blue-300 via-indigo-500 to-purple-600 text-black hover:opacity-90"
-                          : "border border-slate-300 text-slate-300 hover:bg-slate-10000"
+                          ? "bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 bg-clip-text text-transparent"
+                          : "text-slate-900"
                       }`}
                     >
-                      Join Waitlist
-                    </Button>
-                  </Link>
+                      {tier.name}
+                    </h3>
+
+                    {/* Pricing with discount */}
+                    <div className="mt-4 text-3xl font-[Amiri] text-slate-900">
+                      {showDiscount ? (
+                        <>
+                          <span className="line-through text-slate-400 mr-2">
+                            {tier.priceMonthly}
+                          </span>
+                          <span>{discounted}</span>
+                          <span className="text-sm text-slate-600 ml-1">
+                            /month
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          {tier.priceMonthly}
+                          {tier.priceMonthly !== "Free" && (
+                            <span className="text-sm text-slate-600 ml-1">
+                              /month
+                            </span>
+                          )}
+                        </>
+                      )}
+                    </div>
+
+                    <p className="mt-4 text-slate-600 font-[Inter] text-sm">
+                      {tier.description}
+                    </p>
+                  </div>
+
+                  <ul className="mt-4 space-y-3 text-slate-700 font-[Inter]">
+                    {tier.features.map((feature, i) => (
+                      <li key={i} className="flex items-center gap-x-2">
+                        <Check
+                          className={`h-4 w-4 ${
+                            tier.highlight ? "text-indigo-500" : "text-blue-600"
+                          }`}
+                        />
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+
+                  {/* CTA */}
+                  <div className="mt-auto pt-8">
+                    <Link href="/waitlist">
+                      <Button
+                        className={`w-full py-3 px-6 rounded-lg font-medium transition-all duration-300 ${
+                          tier.highlight
+                            ? "bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 text-white hover:opacity-90"
+                            : "bg-slate-900 text-white hover:bg-slate-800"
+                        }`}
+                      >
+                        {tier.cta}
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            </div>
-          ))}
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>
