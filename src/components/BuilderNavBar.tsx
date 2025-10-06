@@ -2,38 +2,29 @@
 
 import React, { useState } from "react";
 import { motion } from "motion/react";
-import { useProject } from "@/components/builder/ProjectProvider";
 import { Save, Play, Rocket } from "lucide-react";
+import { useProject } from "@/components/builder/ProjectProvider";
 
-interface BuilderTopbarProps {
-  onTogglePreview?: () => void;
-  showPreview?: boolean;
-  onSave?: () => void;
-}
-
-export default function BuilderTopbar({
-  onTogglePreview,
-  showPreview,
-  onSave,
-}: BuilderTopbarProps): React.JSX.Element {
-  const { project } = useProject();
+export default function BuilderNavBar(): React.JSX.Element {
+  const { project, saveProject } = useProject();
   const [isSaving, setIsSaving] = useState(false);
+  const [showPreview, setShowPreview] = useState(true);
 
-  // Handle Save button
-  const handleSaveClick = (): void => {
-    if (!onSave) return;
+  const handleSave = (): void => {
+    if (!project) return;
     setIsSaving(true);
-    onSave();
-    setTimeout(() => setIsSaving(false), 700);
+    saveProject();
+    window.dispatchEvent(new Event("project-saved"));
+    setTimeout(() => setIsSaving(false), 800);
   };
 
   return (
     <header className="flex items-center justify-between border-b border-gray-200 bg-white/80 backdrop-blur-sm px-6 py-3 sticky top-0 z-20">
-      {/* Left: Project Name */}
+      {/* Left: project name + status */}
       <div className="flex items-center gap-3">
-        <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse" />
+        <div className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" />
         <h1 className="text-gray-800 font-medium text-sm md:text-base">
-          {project ? project.name : "No Project Loaded"}
+          {project ? project.name : "Untitled Project"}
         </h1>
       </div>
 
@@ -42,10 +33,10 @@ export default function BuilderTopbar({
         {/* Save */}
         <motion.button
           whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={handleSaveClick}
+          whileTap={{ scale: 0.97 }}
+          onClick={handleSave}
           disabled={isSaving}
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-md border text-sm font-medium transition-all ${
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-md border text-sm font-medium transition ${
             isSaving
               ? "bg-gray-100 text-gray-400 cursor-not-allowed"
               : "hover:bg-gray-50 text-gray-800 border-gray-300"
@@ -58,29 +49,29 @@ export default function BuilderTopbar({
         {/* Deploy */}
         <motion.a
           whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.95 }}
+          whileTap={{ scale: 0.97 }}
           href={project ? `/deploy/${project.id}` : "#"}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-2 px-3 py-1.5 rounded-md border border-gray-300 text-gray-800 text-sm font-medium hover:bg-gray-50 transition-all"
+          className="flex items-center gap-2 px-3 py-1.5 rounded-md border border-gray-300 text-gray-800 text-sm font-medium hover:bg-gray-50 transition"
         >
           <Rocket className="w-4 h-4 text-indigo-500" />
           Deploy
         </motion.a>
 
-        {/* Preview Toggle */}
+        {/* Preview toggle */}
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.97 }}
-          onClick={onTogglePreview}
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium border transition-all ${
+          onClick={() => setShowPreview((p) => !p)}
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium border transition ${
             showPreview
               ? "bg-gray-900 text-white border-gray-900 hover:opacity-90"
               : "border-gray-300 text-gray-700 hover:bg-gray-50"
           }`}
         >
           <Play className="w-4 h-4" />
-          {showPreview ? "Hide Preview" : "Preview"}
+          {showPreview ? "Hide Preview" : "Show Preview"}
         </motion.button>
       </div>
     </header>
