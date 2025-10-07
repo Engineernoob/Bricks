@@ -56,7 +56,7 @@ export default function BlogListClient({ posts }: { posts: BlogPostData[] }) {
           ))}
         </div>
 
-        {/* Load More button */}
+        {/* Load More */}
         {posts.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 30 }}
