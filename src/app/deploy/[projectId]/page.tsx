@@ -20,7 +20,7 @@ function PreviewBlock({
 }): React.JSX.Element {
   switch (type) {
     case "text": {
-      const Tag = (props.tag as keyof JSX.IntrinsicElements) || "h2";
+      const Tag = (props.tag as keyof React.JSX.IntrinsicElements) || "h2";
       return (
         <Tag className="font-semibold text-gray-900 text-2xl mb-4">
           {props.text as string}
