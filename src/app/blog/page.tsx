@@ -1,12 +1,12 @@
+"use client";
+
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import dynamic from "next/dynamic";
 
 // ✅ Dynamically import client version (Framer Motion runs here)
-const BlogListClient = dynamic(() => import("./BlogListClient"), {
-  ssr: false,
-});
+const BlogListClient = dynamic(() => import("./BlogListClient"), {});
 
 export default function BlogPage() {
   const postsDir = path.join(process.cwd(), "content/blog");
