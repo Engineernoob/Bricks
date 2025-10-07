@@ -1,3 +1,5 @@
+"use client";
+
 import { motion } from "motion/react";
 import { FallingBricks } from "@/components/FallingBricks";
 import { MarkdownRenderer } from "../MarkdownRenderer";
