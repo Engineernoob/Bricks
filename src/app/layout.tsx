@@ -1,12 +1,24 @@
 import "./globals.css";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Amiri } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/sonner";
 import { Analytics } from "@vercel/analytics/next";
+import { Navbar } from "@/landing/navbar";
 
-const inter = Inter({ subsets: ["latin"] });
+// ───────────────────────────────
+// Fonts
+// ───────────────────────────────
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const amiri = Amiri({
+  subsets: ["latin"],
+  weight: "700",
+  variable: "--font-amiri",
+});
 
+// ───────────────────────────────
+// Metadata
+// ───────────────────────────────
 export const metadata: Metadata = {
   title: "Bricks – Build Your Dream App Brick by Brick",
   description:
@@ -51,6 +63,9 @@ export const metadata: Metadata = {
   },
 };
 
+// ───────────────────────────────
+// Layout
+// ───────────────────────────────
 export default function RootLayout({
   children,
 }: {
@@ -59,8 +74,16 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
-        <body className={inter.className}>
-          {children}
+        <body
+          className={`${inter.variable} ${amiri.variable} bg-gradient-to-b from-slate-50 to-white text-slate-900 antialiased`}
+        >
+          {/* Global Navigation */}
+          <Navbar />
+
+          {/* Main Page Content */}
+          <main className="pt-24 min-h-screen">{children}</main>
+
+          {/* Global UI */}
           <Analytics />
           <Toaster />
         </body>

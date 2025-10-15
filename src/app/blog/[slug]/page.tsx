@@ -1,40 +1,42 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
-import BlogPostClient from "./BlogPostClient"; // client component for motion + MDX
-import { notFound } from "next/navigation";
+import dynamic from "next/dynamic";
 
-export default async function BlogPostPage({
-  params,
-}: {
-  params: { slug: string };
-}) {
-  const slug = params.slug;
-  const filePath = path.join(process.cwd(), "content/blog", `${slug}.mdx`);
+import type { BlogPostData } from "../BlogListClient";
 
-  if (!fs.existsSync(filePath)) {
-    notFound();
-  }
+// Load BlogListClient dynamically as client-only
+const BlogListClient = dynamic(() => import("../BlogListClient"), {
+  ssr: false,
+});
 
-  const fileContents = fs.readFileSync(filePath, "utf-8");
-  const { content, data } = matter(fileContents);
+export default async function BlogPage() {
+  const postsDir = path.join(process.cwd(), "content/blog");
+  const files = fs.readdirSync(postsDir).filter((f) => f.endsWith(".mdx"));
 
-  return (
-    <BlogPostClient
-      slug={slug}
-      title={data.title || slug.replace(/-/g, " ")}
-      category={data.category || ""}
-      date={
-        data.date
-          ? new Date(data.date).toLocaleDateString(undefined, {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })
-          : "Coming soon"
-      }
-      author={data.author || "Team Bricks"}
-      content={content}
-    />
-  );
+  const posts: BlogPostData[] = files.map((file) => {
+    const filePath = path.join(postsDir, file);
+    const source = fs.readFileSync(filePath, "utf-8");
+    const { data } = matter(source);
+    const slug = file.replace(/\.mdx$/, "");
+
+    return {
+      slug,
+      title: data.title || slug.replace(/-/g, " "),
+      excerpt:
+        data.excerpt ||
+        "A quick look behind the scenes at what’s new and what’s next for Bricks.",
+      date: data.date
+        ? new Date(data.date).toLocaleDateString(undefined, {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })
+        : "Coming soon",
+      readTime: data.readTime || "5 min read",
+      author: data.author || "Team Bricks",
+    };
+  });
+
+  return <BlogListClient posts={posts} />;
 }
