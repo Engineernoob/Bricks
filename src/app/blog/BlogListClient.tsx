@@ -5,7 +5,7 @@ import { FallingBricks } from "@/components/FallingBricks";
 import { BlogPost } from "./BlogPost";
 import { BlogNavigation } from "@/components/Navigation";
 
-interface BlogPostData {
+export interface BlogPostData {
   slug: string;
   title: string;
   excerpt: string;
