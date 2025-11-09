@@ -49,9 +49,9 @@ export interface ProjectContextValue {
   selectedBlockId: string | null;
   selectedBlock: Block | null;
 
-  createProject: (name: string) => Project;
-  loadProject: (id: string) => void;
-  saveProject: () => void;
+  createProject: (name: string) => Promise<Project>;
+  loadProject: (id: string) => Promise<void>;
+  saveProject: () => Promise<void>;
   addBlock: (type: BlockType) => Block;
   moveBlocks: (newOrder: Block[]) => void;
   updateBlock: (id: string, patch: Partial<Block["props"]>) => void;
@@ -68,27 +68,6 @@ const ProjectContext = createContext<ProjectContextValue | undefined>(
   undefined,
 );
 
-// LocalStorage keys
-const STORAGE_KEY = "bricks_projects_v1";
-const LAST_OPEN_KEY = "bricks_last_project";
-
-// ───────────────────────────────
-// Helpers
-// ───────────────────────────────
-function loadAll(): Project[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    return JSON.parse(raw) as Project[];
-  } catch {
-    return [];
-  }
-}
-
-function persistAll(list: Project[]): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
-}
-
 // ───────────────────────────────
 // Provider Component
 // ───────────────────────────────
@@ -99,54 +78,51 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 
   // Load all projects on mount
   useEffect(() => {
-    const list = loadAll();
-    setProjectsList(list);
-
-    const last = localStorage.getItem(LAST_OPEN_KEY);
-    if (last) {
-      const found = list.find((p) => p.id === last);
-      if (found) setProject(found);
+    async function fetchProjects() {
+      try {
+        const res = await fetch("/api/projects");
+        if (res.ok) {
+          const list = await res.json();
+          setProjectsList(list);
+          if (list.length > 0) {
+            setProject(list[0]);
+          }
+        }
+      } catch {
+        // ignore errors
+      }
     }
+    fetchProjects();
   }, []);
-
-  // Persist last opened project
-  useEffect(() => {
-    if (project) localStorage.setItem(LAST_OPEN_KEY, project.id);
-  }, [project]);
 
   // ───────────────────────────────
   // Core Actions
   // ───────────────────────────────
-  function createProject(name: string): Project {
-    const newProj: Project = {
-      id: uuid(),
-      name,
-      blocks: [],
-      schema: [],
-      createdAt: new Date().toISOString(),
-    };
-    const updated = [newProj, ...projectsList];
-    persistAll(updated);
-    setProjectsList(updated);
+  async function createProject(name: string): Promise<Project> {
+    const res = await fetch("/api/projects", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name }),
+    });
+    const newProj = await res.json();
+    setProjectsList((prev) => [newProj, ...prev]);
     setProject(newProj);
     return newProj;
   }
 
-  function loadProject(id: string): void {
-    const list = loadAll();
-    const found = list.find((p) => p.id === id) || null;
-    setProject(found);
-    setProjectsList(list);
+  async function loadProject(id: string): Promise<void> {
+    const res = await fetch(`/api/projects/${id}`);
+    const data = await res.json();
+    setProject(data);
   }
 
-  function saveProject(): void {
+  async function saveProject(): Promise<void> {
     if (!project) return;
-    const list = loadAll();
-    const idx = list.findIndex((p) => p.id === project.id);
-    if (idx >= 0) list[idx] = project;
-    else list.unshift(project);
-    persistAll(list);
-    setProjectsList(list);
+    await fetch(`/api/projects/${project.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(project),
+    });
   }
 
   function addBlock(type: BlockType): Block {
@@ -162,7 +138,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
     const updated = { ...project, blocks: [...project.blocks, newBlock] };
 
     setProject(updated);
-    persistAll([updated, ...projectsList.filter((p) => p.id !== project.id)]);
+    saveProject();
     return newBlock;
   }
 
